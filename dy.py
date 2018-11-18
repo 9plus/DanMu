@@ -97,8 +97,8 @@ def signal_handler(signal,frame):
 
 
 if __name__ == '__main__':
-    #room_id2 = 2009
     room_id1 = 60937
+    #room_id2 = 2009
     signal.signal(signal.SIGINT, signal_handler)
 
     p1 = multiprocessing.Process(target=DM_start, args=(room_id1,))
