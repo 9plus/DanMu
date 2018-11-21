@@ -13,11 +13,11 @@ port = 8601
 client.connect((host, port))
 
 # 弹幕查询正则表达式
-danmu_regex = re.compile(b'txt@=(.+?)/cid@')
-username_regex = re.compile(b'nn@=(.+?)/txt@')
-level_regex = re.compile(b'level@=(.+?)/nl@')
-card_regex = re.compile(b'bnn@=(.+?)/bl@')
-card_level_regex = re.compile(b'bl@=(.+?)/brid@')
+danmu_regex = re.compile(b'/txt@=(.+?)/')
+username_regex = re.compile(b'/nn@=(.+?)/')
+level_regex = re.compile(b'/level@=(.+?)/')
+card_regex = re.compile(b'/bnn@=(.+?)/')
+card_level_regex = re.compile(b'/bl@=(.+?)/')
 
 
 
@@ -49,27 +49,35 @@ def DM_start(roomid):
     send_req_msg(msg_more)
     # 查找用户名和弹幕内容
 
-
     while True:
         data = client.recv(4096)
-        danmu_username = username_regex.findall(data)
-        danmu_content = danmu_regex.findall(data)
-        danmu_level = level_regex.findall(data)
-        danmu_card_level = card_level_regex.findall(data)
-        danmu_card = card_regex.findall(data)
-
-        if not data:
+        if not data or len(data)==0:
             break
+
         else:
-            for i in range(0, len(danmu_content)):
+            danmu_username = username_regex.findall(data)
+            danmu_content = danmu_regex.findall(data)
+            danmu_level = level_regex.findall(data)
+            danmu_card_level = card_level_regex.findall(data)
+            danmu_card = card_regex.findall(data)
+
+            for i in range(0,len(danmu_content)):
                 try:
-                    # 输出信息
-                    print('[{}级{}  {}]:{}'.format(danmu_card_level[0].decode('utf8'),
-                                                       danmu_card[0].decode('utf8'),
-                                                       danmu_username[0].decode(
-                        'utf8'), danmu_content[0].decode(encoding='utf8')))
+                    if (danmu_card_level[i].decode('utf8') == '0'):
+                        print('[{}]: {}'.format(danmu_username[i].decode(
+                            encoding='utf8'), danmu_content[i].decode(encoding='utf8')))
+                    else:
+                        print('[{}级{}  {}]: {}'.format(danmu_card_level[i].decode('utf8'),
+                                                       danmu_card[i].decode('utf8'),
+                                                       danmu_username[i].decode(
+                                                           'utf8'), danmu_content[i].decode(encoding='utf8')))
                 except:
-                    continue
+                    print('eeeeeeeeeeeeeeeeeeeeee')
+                    for j in range(0,len(danmu_username)):
+                        print('报错了，用户名是:{},byte消息是{}'.format(danmu_username[j].decode('utf8'),danmu_username[j]))
+                    for j in range(0,len(danmu_content)):
+                        print('报错了，弹幕是:{},byte消息是{}'.format(danmu_content[j].decode('utf8'),danmu_content[j]))
+
 
 
 def keeplive():
@@ -97,7 +105,7 @@ def signal_handler(signal,frame):
 
 
 if __name__ == '__main__':
-    room_id1 = 60937
+    room_id1 = 99999
     #room_id2 = 2009
     signal.signal(signal.SIGINT, signal_handler)
 
