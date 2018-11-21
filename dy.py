@@ -6,11 +6,6 @@ import time
 import re
 import signal
 
-# 构造socket连接，和斗鱼api服务器相连接
-client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-host = socket.gethostbyname("openbarrage.douyutv.com")
-port = 8601
-client.connect((host, port))
 
 # 弹幕查询正则表达式
 danmu_regex = re.compile(b'/txt@=(.+?)/')
@@ -106,12 +101,13 @@ def signal_handler(signal,frame):
 
 if __name__ == '__main__':
     room_id1 = 99999
-    #room_id2 = 2009
-    signal.signal(signal.SIGINT, signal_handler)
 
-    p1 = multiprocessing.Process(target=DM_start, args=(room_id1,))
+    #room_id2 = 2009
+    signal.signal(signal.SIGINT, dan_mu.signal_handler)
+
+    p1 = multiprocessing.Process(target=dan_mu.DM_start, args=(room_id1,))
     #p2 = multiprocessing.Process(target=DM_start, args=(room_id2,))
-    p3 = multiprocessing.Process(target=keeplive)
+    p3 = multiprocessing.Process(target=dan_mu.keeplive)
     p1.start()
     #p2.start()
     p3.start()
